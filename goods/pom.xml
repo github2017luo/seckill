@@ -42,7 +42,6 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.1</version>
         </dependency>
 
         <!-- commons-poll2 对象池依赖 -->
