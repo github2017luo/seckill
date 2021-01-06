@@ -5,8 +5,8 @@
 ## Linux环境：centos7 [CentOS-7-x86_64-DVD-2009]<br>安装docker：yum install docker [Version:1.13.1]
 ## 在docker中拉取镜像：
 1、mysql [Server version: 8.0.22 MySQL Community Server - GPL]  端口映射 [3306->3306]
-<br>2、rebbitmq [Redis server v=6.0.9] 端口映射 [6379->6379]
-<br>3、redis
+<br>2、redis [Redis server v=6.0.9] 端口映射 [6379->6379]
+<br>3、rebbitmq
 
 
 ## 数据库建表语句
