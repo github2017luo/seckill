@@ -25,6 +25,7 @@
         <module>../time-server</module>
         <module>../commons</module>
         <module>../user</module>
+        <module>../order</module>
     </modules>
 
     <properties>

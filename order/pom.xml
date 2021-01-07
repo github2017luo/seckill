@@ -10,10 +10,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <artifactId>user</artifactId>
+    <artifactId>order</artifactId>
     <version>1.0.0</version>
 
-    <name>user</name>
+    <name>order</name>
     <description>Demo project for Spring Boot</description>
 
     <dependencies>
