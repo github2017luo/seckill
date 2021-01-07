@@ -13,7 +13,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ * 秒杀商品类
  * </p>
  *
  * @author tsk

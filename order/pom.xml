@@ -18,6 +18,12 @@
 
     <dependencies>
 
+        <!-- rabbitMQ 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <!-- spring session 依赖 -->
         <dependency>
             <groupId>org.springframework.session</groupId>

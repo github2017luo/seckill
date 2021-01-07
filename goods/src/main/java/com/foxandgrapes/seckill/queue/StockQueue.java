@@ -15,7 +15,7 @@ public class StockQueue {
 
     @RabbitListener(queues = "stock_queue")
     public void updateStock(String msg) {
-
+        // msg为商品的ID
         System.out.println("stock_queue接受消息：" + msg);
 
         Map<String, Object> resultMap = stockService.updateStock(Long.valueOf(msg), 0, 1);

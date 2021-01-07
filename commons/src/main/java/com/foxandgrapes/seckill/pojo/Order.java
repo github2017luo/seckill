@@ -3,6 +3,7 @@ package com.foxandgrapes.seckill.pojo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -12,7 +13,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ * 订单类
  * </p>
  *
  * @author tsk
@@ -68,11 +69,13 @@ public class Order implements Serializable {
     /**
      * 订单的创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Shanghai")
     private Date createDate;
 
     /**
      * 支付时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Shanghai")
     private Date payDate;
 
 

@@ -1,9 +1,13 @@
 package com.foxandgrapes.seckill.controller;
 
 
+import com.foxandgrapes.seckill.service.IOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.stereotype.Controller;
+import java.util.Map;
 
 /**
  * <p>
@@ -13,8 +17,15 @@ import org.springframework.stereotype.Controller;
  * @author tsk
  * @since 2021-01-06
  */
-@Controller
+@RestController
 @RequestMapping("/order")
 public class OrderController {
+    @Autowired
+    private IOrderService orderService;
 
+    @RequestMapping("/increateOrder/{seckillGoodsId}/{userId}")
+    public Map<String, Object> increateOrder(@PathVariable("seckillGoodsId") Long seckillGoodsId,
+                                             @PathVariable("userId") Long userId) {
+        return orderService.createOrder(seckillGoodsId, userId);
+    }
 }
