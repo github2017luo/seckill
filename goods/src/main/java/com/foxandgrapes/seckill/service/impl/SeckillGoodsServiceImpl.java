@@ -44,19 +44,19 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
         Map<String, Object> map = new HashMap<>();
         if (seckillGoods == null || seckillGoods.getGoodsId() == null ||
                 seckillGoods.getStartDate() == null || seckillGoods.getEndDate() == null) {
-            map.put("result", "false");
+            map.put("result", false);
             map.put("msg", "秒杀商品信息不能为空！");
             return map;
         }
         if (seckillGoods.getEndDate().before(seckillGoods.getStartDate())) {
-            map.put("result", "false");
+            map.put("result", false);
             map.put("msg", "秒杀商品结束时间不能小于开始时间！");
             return map;
         }
 
         int ret = seckillGoodsMapper.insert(seckillGoods);
         if (ret != 1) {
-            map.put("result", "false");
+            map.put("result", false);
             map.put("msg", "秒杀商品添加失败！");
             return map;
         }
@@ -68,7 +68,7 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
             Date now = simpleDateFormat.parse(timeController.getTime());
             diff = (seckillGoods.getEndDate().getTime() - now.getTime()) / 1000;
             if (diff <= 0) {
-                map.put("result", "false");
+                map.put("result", false);
                 map.put("msg", "秒杀商品结束时间不能小于当前时间！");
                 return map;
             }
@@ -83,7 +83,7 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
         Goods goods = goodsMapper.selectById(seckillGoods.getGoodsId());
         redisTemplate.opsForValue().set("GOODS_" + goods.getId(), goods, diff, TimeUnit.SECONDS);
 
-        map.put("result", "true");
+        map.put("result", true);
         map.put("msg", "秒杀商品添加成功并缓存成功!");
 
         return map;

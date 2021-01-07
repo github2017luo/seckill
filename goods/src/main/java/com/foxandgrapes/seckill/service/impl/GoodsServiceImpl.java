@@ -37,7 +37,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         Map<String, Object> map = new HashMap<>();
         List<Goods> goodsList = goodsMapper.selectList(null);
         if (goodsList == null || goodsList.size() == 0) {
-            map.put("result", "false");
+            map.put("result", false);
             map.put("msg", "商品信息获取失败！");
             return map;
         }
@@ -47,7 +47,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             getSeckillDetail(goods);
         }
 
-        map.put("result", "true");
+        map.put("result", true);
         map.put("goodsList", goodsList);
         return map;
     }
@@ -57,7 +57,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         Map<String, Object> map = new HashMap<>();
         Goods goods = goodsMapper.selectById(id);
         if (goods == null) {
-            map.put("result", "false");
+            map.put("result", false);
             map.put("msg", "查询无果！");
             return map;
         }
@@ -65,7 +65,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         // 添加秒杀信息
         getSeckillDetail(goods);
 
-        map.put("result", "true");
+        map.put("result", true);
         map.put("goods", goods);
         return map;
     }
