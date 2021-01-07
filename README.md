@@ -54,12 +54,3 @@
       `end_date` datetime DEFAULT NULL COMMENT '秒杀结束时间',
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8
-
-### 秒杀订单表
-    CREATE TABLE `tb_seckill_order` (
-      `id` bigint NOT NULL AUTO_INCREMENT COMMENT '秒杀订单ID',
-      `user_id` bigint DEFAULT NULL COMMENT '用户ID',
-      `order_id` bigint DEFAULT NULL COMMENT '订单ID',
-      `goods_id` bigint DEFAULT NULL COMMENT '商品ID',
-      PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8
