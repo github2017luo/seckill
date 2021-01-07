@@ -3,13 +3,16 @@ package com.foxandgrapes.seckill.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.foxandgrapes.seckill.mapper.GoodsMapper;
 import com.foxandgrapes.seckill.pojo.Goods;
+import com.foxandgrapes.seckill.pojo.SeckillGoods;
 import com.foxandgrapes.seckill.service.IGoodsService;
+import com.foxandgrapes.seckill.service.ITimeController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>
@@ -24,6 +27,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private ITimeController timeController;
 
     @Override
     public Map<String, Object> getGoodsList() {
@@ -34,6 +41,12 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             map.put("msg", "商品信息获取失败！");
             return map;
         }
+
+        // 添加秒杀信息
+        for (Goods goods : goodsList) {
+            getSeckillDetail(goods);
+        }
+
         map.put("result", "true");
         map.put("goodsList", goodsList);
         return map;
@@ -48,8 +61,37 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             map.put("msg", "查询无果！");
             return map;
         }
+
+        // 添加秒杀信息
+        getSeckillDetail(goods);
+
         map.put("result", "true");
         map.put("goods", goods);
         return map;
+    }
+
+    private void getSeckillDetail(Goods goods) {
+        if (goods == null) return;
+
+        // 取redis中的秒杀商品信息
+        SeckillGoods seckillGoods = (SeckillGoods) redisTemplate.opsForValue().get("SECKILL_GOODS_" + goods.getId());
+
+        if (seckillGoods != null) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+            try {
+                Date now = simpleDateFormat.parse(timeController.getTime());
+
+                // 在秒杀结束时间前
+                if (now.getTime() <= seckillGoods.getEndDate().getTime()) {
+                    // 添加秒杀信息
+                    goods.setSeckillGoods(seckillGoods);
+                    goods.setNowTime(now);
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

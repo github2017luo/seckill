@@ -1,13 +1,16 @@
 package com.foxandgrapes.seckill.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>
@@ -64,5 +67,16 @@ public class Goods implements Serializable {
      */
     private Integer goodsStock;
 
+    /**
+     * 秒杀信息
+     */
+    @TableField(exist = false)
+    private SeckillGoods seckillGoods;
 
+    /**
+     * 展示商品的当前时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Shanghai")
+    @TableField(exist = false)
+    private Date nowTime;
 }

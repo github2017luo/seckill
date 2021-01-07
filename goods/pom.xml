@@ -28,7 +28,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- lombok -->
@@ -54,7 +53,6 @@
         <dependency>
             <groupId>com.foxandgrapes.seckill</groupId>
             <artifactId>commons</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
     </dependencies>
