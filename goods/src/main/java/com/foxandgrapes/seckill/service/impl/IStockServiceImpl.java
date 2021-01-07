@@ -18,31 +18,31 @@ public class IStockServiceImpl implements IStockService {
     @Override
     public Map<String, Object> updateStock(Long goodsId, Integer inputStock, Integer outputStock) {
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
 
         if (goodsId == null) {
-            map.put("result", false);
-            map.put("msg", "商品ID不能为空！");
-            return map;
+            resultMap.put("result", false);
+            resultMap.put("msg", "商品ID不能为空！");
+            return resultMap;
         }
         if (inputStock == 0 && outputStock == 0) {
-            map.put("result", false);
-            map.put("msg", "入库数量和出库数量不能同时为0！");
-            return map;
+            resultMap.put("result", false);
+            resultMap.put("msg", "入库数量和出库数量不能同时为0！");
+            return resultMap;
         }
         Goods goods = goodsMapper.selectById(goodsId);
         int newStock = goods.getGoodsStock() + inputStock - outputStock;
         if (newStock < 0) {
-            map.put("result", false);
-            map.put("msg", "新的库存不能小于0！");
-            return map;
+            resultMap.put("result", false);
+            resultMap.put("msg", "新的库存不能小于0！");
+            return resultMap;
         }
 
         goods.setGoodsStock(newStock);
         goodsMapper.updateById(goods);
 
-        map.put("result", true);
-        map.put("msg", "更新库存成功！");
-        return map;
+        resultMap.put("result", true);
+        resultMap.put("msg", "更新库存成功！");
+        return resultMap;
     }
 }

@@ -34,12 +34,12 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public Map<String, Object> getGoodsList() {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         List<Goods> goodsList = goodsMapper.selectList(null);
         if (goodsList == null || goodsList.size() == 0) {
-            map.put("result", false);
-            map.put("msg", "商品信息获取失败！");
-            return map;
+            resultMap.put("result", false);
+            resultMap.put("msg", "商品信息获取失败！");
+            return resultMap;
         }
 
         // 添加秒杀信息
@@ -47,27 +47,27 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             getSeckillDetail(goods);
         }
 
-        map.put("result", true);
-        map.put("goodsList", goodsList);
-        return map;
+        resultMap.put("result", true);
+        resultMap.put("goodsList", goodsList);
+        return resultMap;
     }
 
     @Override
     public Map<String, Object> getGoods(Long id) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         Goods goods = goodsMapper.selectById(id);
         if (goods == null) {
-            map.put("result", false);
-            map.put("msg", "查询无果！");
-            return map;
+            resultMap.put("result", false);
+            resultMap.put("msg", "查询无果！");
+            return resultMap;
         }
 
         // 添加秒杀信息
         getSeckillDetail(goods);
 
-        map.put("result", true);
-        map.put("goods", goods);
-        return map;
+        resultMap.put("result", true);
+        resultMap.put("goods", goods);
+        return resultMap;
     }
 
     private void getSeckillDetail(Goods goods) {
