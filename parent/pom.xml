@@ -24,7 +24,7 @@
         <module>../server</module>
         <module>../time-server</module>
         <module>../commons</module>
-        <!--<module>../stock</module>-->
+        <module>../user</module>
     </modules>
 
     <properties>
