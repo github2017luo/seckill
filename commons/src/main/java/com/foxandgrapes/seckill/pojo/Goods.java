@@ -63,11 +63,6 @@ public class Goods implements Serializable {
     private BigDecimal goodsPrice;
 
     /**
-     * 商品库存，-1表示没有限制
-     */
-    private Integer goodsStock;
-
-    /**
      * 秒杀信息
      */
     @TableField(exist = false)

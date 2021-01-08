@@ -1,6 +1,5 @@
 package com.foxandgrapes.seckill.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -32,7 +31,6 @@ public class Order implements Serializable {
     /**
      * 订单ID
      */
-    @TableId(value = "id")
     private Long id;
 
     /**
@@ -43,7 +41,7 @@ public class Order implements Serializable {
     /**
      * 商品ID
      */
-    private Long goodsId;
+    private Long seckillGoodsId;
 
     /**
      * 冗余过来的商品名称

@@ -49,7 +49,7 @@ public class SeckillGoods implements Serializable {
     /**
      * 库存数量
      */
-    private Integer stockCount;
+    private Integer seckillStock;
 
     /**
      * 秒杀开始时间

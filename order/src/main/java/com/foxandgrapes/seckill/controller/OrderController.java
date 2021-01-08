@@ -75,8 +75,8 @@ public class OrderController {
         //     return resultMap;
         // }
 
-        // 调用支付(模拟支付成功并返回正常数据)
-        boolean isPay = true;
+        // 调用支付
+        boolean isPay = pay();
 
         if (!isPay){
             resultMap.put("result", false);
@@ -85,5 +85,10 @@ public class OrderController {
         }
 
         return orderService.payOrder(orderId, seckillGoodsId);
+    }
+
+    private boolean pay() {
+        // 模拟支付成功
+        return true;
     }
 }

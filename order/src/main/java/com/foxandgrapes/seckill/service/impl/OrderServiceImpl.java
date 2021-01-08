@@ -101,7 +101,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     Order order = new Order();
                     order.setId(orderId);
                     order.setUserId(userId);
-                    order.setGoodsId(goods.getId());
+                    order.setSeckillGoodsId(seckillGoodsId);
                     order.setGoodsName(goods.getGoodsName());
                     order.setGoodsCount(1);
                     order.setGoodsPrice(seckillGoods.getSeckillPrice());
@@ -196,6 +196,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         Order order = orderMapper.selectById(orderId);
+        // 设置已支付：1
         order.setStatus(1);
         int res = orderMapper.updateById(order);
 

@@ -32,7 +32,6 @@
       `goods_img` varchar(64) DEFAULT NULL COMMENT '商品图片',
       `goods_detail` longtext COMMENT '商品详情',
       `goods_price` decimal(10,2) DEFAULT '0.00' COMMENT '商品价格',
-      `goods_stock` int DEFAULT '0' COMMENT '商品库存，-1表示没有限制',
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
@@ -40,7 +39,7 @@
     CREATE TABLE `tb_order` (
       `id` bigint NOT NULL COMMENT '订单ID',
       `user_id` bigint DEFAULT NULL COMMENT '用户ID',
-      `goods_id` bigint DEFAULT NULL COMMENT '商品ID',
+      `seckill_goods_id` bigint DEFAULT NULL COMMENT '秒杀商品ID',
       `goods_name` varchar(16) DEFAULT NULL COMMENT '冗余过来的商品名称',
       `goods_count` int DEFAULT '0' COMMENT '商品数量',
       `goods_price` decimal(10,2) DEFAULT '0.00' COMMENT '商品单价',
@@ -55,7 +54,7 @@
       `id` bigint NOT NULL AUTO_INCREMENT COMMENT '秒杀商品ID',
       `goods_id` bigint DEFAULT NULL COMMENT '商品ID',
       `seckill_price` decimal(10,2) DEFAULT '0.00' COMMENT '秒杀价格',
-      `stock_count` int DEFAULT NULL COMMENT '库存数量',
+      `seckill_stock` int DEFAULT NULL COMMENT '库存数量',
       `start_date` datetime DEFAULT NULL COMMENT '秒杀开始时间',
       `end_date` datetime DEFAULT NULL COMMENT '秒杀结束时间',
       PRIMARY KEY (`id`)

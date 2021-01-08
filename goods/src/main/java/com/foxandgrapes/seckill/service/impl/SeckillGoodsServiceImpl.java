@@ -57,8 +57,15 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
             return resultMap;
         }
 
-        int ret = seckillGoodsMapper.insert(seckillGoods);
-        if (ret != 1) {
+        Goods goods = goodsMapper.selectById(seckillGoods.getGoodsId());
+        if (goods == null) {
+            resultMap.put("result", false);
+            resultMap.put("msg", "秒杀商品不存在！");
+            return resultMap;
+        }
+
+        int res = seckillGoodsMapper.insert(seckillGoods);
+        if (res != 1) {
             resultMap.put("result", false);
             resultMap.put("msg", "秒杀商品添加失败！");
             return resultMap;
@@ -83,11 +90,10 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
         redisTemplate.opsForValue().set("SECKILL_GOODS_" + seckillGoods.getGoodsId(), seckillGoods, diff, TimeUnit.SECONDS);
 
         // 添加商品缓存
-        Goods goods = goodsMapper.selectById(seckillGoods.getGoodsId());
         redisTemplate.opsForValue().set("GOODS_" + goods.getId(), goods, diff, TimeUnit.SECONDS);
 
         // 添加秒杀商品的数量（将数量单独保存）
-        stringRedisTemplate.opsForValue().set("SECKILL_GOODS_COUNT_" + seckillGoods.getGoodsId(), seckillGoods.getStockCount().toString(), diff, TimeUnit.SECONDS);
+        stringRedisTemplate.opsForValue().set("SECKILL_GOODS_COUNT_" + seckillGoods.getGoodsId(), seckillGoods.getSeckillStock().toString(), diff, TimeUnit.SECONDS);
 
         resultMap.put("result", true);
         resultMap.put("msg", "秒杀商品添加成功并缓存成功!");

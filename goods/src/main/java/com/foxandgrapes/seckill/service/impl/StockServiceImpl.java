@@ -22,7 +22,7 @@ public class StockServiceImpl implements IStockService {
 
         if (seckillGoodsId == null) {
             resultMap.put("result", false);
-            resultMap.put("msg", "商品ID不能为空！");
+            resultMap.put("msg", "秒杀商品ID不能为空！");
             return resultMap;
         }
         if (inputStock == 0 && outputStock == 0) {
@@ -31,14 +31,19 @@ public class StockServiceImpl implements IStockService {
             return resultMap;
         }
         SeckillGoods seckillGoods = seckillGoodsMapper.selectById(seckillGoodsId);
-        int newStock = seckillGoods.getStockCount() + inputStock - outputStock;
+        if (seckillGoods == null) {
+            resultMap.put("result", false);
+            resultMap.put("msg", "该秒杀商品不存在！");
+            return resultMap;
+        }
+        int newStock = seckillGoods.getSeckillStock() + inputStock - outputStock;
         if (newStock < 0) {
             resultMap.put("result", false);
             resultMap.put("msg", "新的库存不能小于0！");
             return resultMap;
         }
 
-        seckillGoods.setStockCount(newStock);
+        seckillGoods.setSeckillStock(newStock);
         int res = seckillGoodsMapper.updateById(seckillGoods);
         if (res != 1) {
             resultMap.put("result", false);
