@@ -1,12 +1,16 @@
 # seckill 秒杀系统
     
 
-# 系统环境
-## Linux环境：centos7 [CentOS-7-x86_64-DVD-2009]<br>安装docker：yum install docker [Version:1.13.1]
+# 操作系统
+## Linux环境：centos7 [CentOS-7-x86_64-DVD-2009]
+# 软件环境
+## 安装docker：yum install docker [Version:1.13.1]
 ## 在docker中拉取镜像以及创建容器：
     1、mysql [Server version: 8.0.22 MySQL Community Server - GPL]  端口映射 [3306->3306]
     2、redis [Redis server v=6.0.9] 端口映射 [6379->6379]
     3、rebbitmq [RabbitMQ 3.8.9 Erlang 23.2.1] 端口映射 [15672->15672, 5672->5672]
+## springboot.version [2.3.7]
+## spring-cloud.version [Hoxton.SR9]
 
 ## 微服务对应端口
     server:         9000
