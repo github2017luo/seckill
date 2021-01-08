@@ -96,7 +96,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     TimeUnit.SECONDS)) {
                 try {
                     // 从商品信息从redis中取出来
-                    Goods goods = (Goods) redisTemplate.opsForValue().get("GOODS_" + seckillGoodsId);
+                    Goods goods = (Goods) redisTemplate.opsForValue().get("GOODS_" + seckillGoods.getGoodsId());
                     // 将订单信息写入到消息队列中待处理
                     Order order = new Order();
                     order.setId(orderId);
@@ -196,8 +196,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         Order order = orderMapper.selectById(orderId);
+
+        if (order == null) {
+            resultMap.put("result", false);
+            resultMap.put("msg", "订单不存在！");
+            return resultMap;
+        }
+
         // 设置已支付：1
         order.setStatus(1);
+        // 设置支付时间
+        order.setPayDate(new Date());
         int res = orderMapper.updateById(order);
 
         if (res != 1) {

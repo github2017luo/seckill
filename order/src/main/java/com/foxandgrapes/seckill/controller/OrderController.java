@@ -30,9 +30,9 @@ public class OrderController {
     @RequestMapping("/createOrder/{seckillGoodsId}")
     public Map<String, Object> createOrder(@PathVariable("seckillGoodsId") Long seckillGoodsId,
                                              HttpServletRequest request) {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        HttpSession httpSession = request.getSession();
-        User user = (User) httpSession.getAttribute("user");
+        // Map<String, Object> resultMap = new HashMap<String, Object>();
+        // HttpSession httpSession = request.getSession();
+        // User user = (User) httpSession.getAttribute("user");
 
         // 测试放行
         // if (user == null){
@@ -47,9 +47,9 @@ public class OrderController {
     @RequestMapping("/getOrder/{orderId}")
     public Map<String, Object> getOrder(@PathVariable("orderId") Long orderId,
                                         HttpServletRequest request) {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        HttpSession httpSession = request.getSession();
-        User user = (User) httpSession.getAttribute("user");
+        // Map<String, Object> resultMap = new HashMap<String, Object>();
+        // HttpSession httpSession = request.getSession();
+        // User user = (User) httpSession.getAttribute("user");
 
         // 测试放行
         // if (user == null){

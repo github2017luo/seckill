@@ -1,6 +1,5 @@
 package com.foxandgrapes.seckill.pojo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -33,7 +32,7 @@ public class SeckillGoods implements Serializable {
     /**
      * 秒杀商品ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id")
     private Long id;
 
     /**

@@ -46,11 +46,13 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
 
         Map<String, Object> resultMap = new HashMap<>();
         if (seckillGoods == null || seckillGoods.getGoodsId() == null ||
-                seckillGoods.getStartDate() == null || seckillGoods.getEndDate() == null) {
+                seckillGoods.getStartDate() == null || seckillGoods.getEndDate() == null ||
+                seckillGoods.getSeckillStock() == null || seckillGoods.getSeckillPrice() == null) {
             resultMap.put("result", false);
-            resultMap.put("msg", "秒杀商品信息不能为空！");
+            resultMap.put("msg", "秒杀商品信息不能有空！");
             return resultMap;
         }
+
         if (seckillGoods.getEndDate().before(seckillGoods.getStartDate())) {
             resultMap.put("result", false);
             resultMap.put("msg", "秒杀商品结束时间不能小于开始时间！");
@@ -64,6 +66,8 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
             return resultMap;
         }
 
+        // 生成秒杀商品的id
+        seckillGoods.setId(System.currentTimeMillis());
         int res = seckillGoodsMapper.insert(seckillGoods);
         if (res != 1) {
             resultMap.put("result", false);
@@ -87,13 +91,13 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
         }
 
         // 添加秒杀商品缓存
-        redisTemplate.opsForValue().set("SECKILL_GOODS_" + seckillGoods.getGoodsId(), seckillGoods, diff, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set("SECKILL_GOODS_" + seckillGoods.getId(), seckillGoods, diff, TimeUnit.SECONDS);
 
         // 添加商品缓存
         redisTemplate.opsForValue().set("GOODS_" + goods.getId(), goods, diff, TimeUnit.SECONDS);
 
         // 添加秒杀商品的数量（将数量单独保存）
-        stringRedisTemplate.opsForValue().set("SECKILL_GOODS_COUNT_" + seckillGoods.getGoodsId(), seckillGoods.getSeckillStock().toString(), diff, TimeUnit.SECONDS);
+        stringRedisTemplate.opsForValue().set("SECKILL_GOODS_COUNT_" + seckillGoods.getId(), seckillGoods.getSeckillStock().toString(), diff, TimeUnit.SECONDS);
 
         resultMap.put("result", true);
         resultMap.put("msg", "秒杀商品添加成功并缓存成功!");

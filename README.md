@@ -51,7 +51,7 @@
 
 ### 秒杀商品表
     CREATE TABLE `tb_seckill_goods` (
-      `id` bigint NOT NULL AUTO_INCREMENT COMMENT '秒杀商品ID',
+      `id` bigint NOT NULL COMMENT '秒杀商品ID',
       `goods_id` bigint DEFAULT NULL COMMENT '商品ID',
       `seckill_price` decimal(10,2) DEFAULT '0.00' COMMENT '秒杀价格',
       `seckill_stock` int DEFAULT NULL COMMENT '库存数量',
