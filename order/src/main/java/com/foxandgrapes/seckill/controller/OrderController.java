@@ -22,7 +22,6 @@ import java.util.Map;
  * @since 2021-01-06
  */
 @RestController
-@RequestMapping("/order")
 public class OrderController {
     @Autowired
     private IOrderService orderService;

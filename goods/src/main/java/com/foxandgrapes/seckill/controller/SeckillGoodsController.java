@@ -19,7 +19,6 @@ import java.util.Map;
  * @since 2021-01-06
  */
 @RestController
-@RequestMapping("/seckillGoods")
 public class SeckillGoodsController {
 
     @Autowired
