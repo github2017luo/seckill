@@ -9,7 +9,7 @@
     1、mysql [Server version: 8.0.22 MySQL Community Server - GPL]  端口映射 [3306->3306]
     2、redis [Redis server v=6.0.9] 端口映射 [6379->6379]
     3、rebbitmq [RabbitMQ 3.8.9 Erlang 23.2.1] 端口映射 [15672->15672, 5672->5672]
-## springboot.version [2.3.7]
+## springboot.version [2.3.7.RELEASE]
 ## spring-cloud.version [Hoxton.SR9]
 
 ## 微服务对应端口
