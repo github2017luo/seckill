@@ -108,6 +108,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     order.setStatus(0);
                     order.setCreateDate(now);
 
+                    // 放入订单队列，后续慢慢处理
                     amqpTemplate.convertAndSend("order_queue", order);
                 } catch (Exception e) {
                     // 异常的时候自动释放自己的锁
@@ -159,5 +160,56 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         map.put("result", true);
         map.put("msg", "订单成功写入数据库！");
         return map;
+    }
+
+    @Override
+    public Map<String, Object> getOrder(Long orderId) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        if (orderId == null) {
+            resultMap.put("result", false);
+            resultMap.put("msg", "订单号不能为空！");
+            return resultMap;
+        }
+
+        Order order = orderMapper.selectById(orderId);
+        if (order == null) {
+            resultMap.put("result", false);
+            resultMap.put("msg", "订单不存在！");
+            return resultMap;
+        }
+
+        resultMap.put("result", true);
+        resultMap.put("msg", "获取订单成功！");
+        resultMap.put("order", order);
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> payOrder(Long orderId, Long seckillGoodsId) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        if (orderId == null || seckillGoodsId == null) {
+            resultMap.put("result", false);
+            resultMap.put("msg", "订单有误！");
+            return resultMap;
+        }
+
+        Order order = orderMapper.selectById(orderId);
+        order.setStatus(1);
+        int res = orderMapper.updateById(order);
+
+        if (res != 1) {
+            resultMap.put("result", false);
+            resultMap.put("msg", "订单更新失败！");
+            return resultMap;
+        }
+
+        // 放入库存队列，后续慢慢处理
+        amqpTemplate.convertAndSend("stock_queue", seckillGoodsId);
+
+        resultMap.put("result", true);
+        resultMap.put("msg", "订单更新完成！");
+        return resultMap;
     }
 }

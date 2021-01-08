@@ -29,4 +29,13 @@ public interface IOrderService extends IService<Order> {
      * @return
      */
     Map<String, Object> insertOrder(Order order);
+
+    /**
+     * 获取订单
+     * @param orderId
+     * @return
+     */
+    Map<String, Object> getOrder(Long orderId);
+
+    Map<String, Object> payOrder(Long orderId, Long seckillGoodsId);
 }

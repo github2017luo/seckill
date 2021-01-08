@@ -48,6 +48,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
 
         resultMap.put("result", true);
+        resultMap.put("msg", "商品列表获取成功！");
         resultMap.put("goodsList", goodsList);
         return resultMap;
     }
@@ -66,6 +67,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         getSeckillDetail(goods);
 
         resultMap.put("result", true);
+        resultMap.put("msg", "商品获取成功！");
         resultMap.put("goods", goods);
         return resultMap;
     }

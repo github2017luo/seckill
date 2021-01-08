@@ -1,7 +1,7 @@
 package com.foxandgrapes.seckill.service.impl;
 
-import com.foxandgrapes.seckill.mapper.GoodsMapper;
-import com.foxandgrapes.seckill.pojo.Goods;
+import com.foxandgrapes.seckill.mapper.SeckillGoodsMapper;
+import com.foxandgrapes.seckill.pojo.SeckillGoods;
 import com.foxandgrapes.seckill.service.IStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,14 +13,14 @@ import java.util.Map;
 public class StockServiceImpl implements IStockService {
 
     @Autowired
-    private GoodsMapper goodsMapper;
+    private SeckillGoodsMapper seckillGoodsMapper;
 
     @Override
-    public Map<String, Object> updateStock(Long goodsId, Integer inputStock, Integer outputStock) {
+    public Map<String, Object> updateStock(Long seckillGoodsId, Integer inputStock, Integer outputStock) {
 
         Map<String, Object> resultMap = new HashMap<>();
 
-        if (goodsId == null) {
+        if (seckillGoodsId == null) {
             resultMap.put("result", false);
             resultMap.put("msg", "商品ID不能为空！");
             return resultMap;
@@ -30,16 +30,21 @@ public class StockServiceImpl implements IStockService {
             resultMap.put("msg", "入库数量和出库数量不能同时为0！");
             return resultMap;
         }
-        Goods goods = goodsMapper.selectById(goodsId);
-        int newStock = goods.getGoodsStock() + inputStock - outputStock;
+        SeckillGoods seckillGoods = seckillGoodsMapper.selectById(seckillGoodsId);
+        int newStock = seckillGoods.getStockCount() + inputStock - outputStock;
         if (newStock < 0) {
             resultMap.put("result", false);
             resultMap.put("msg", "新的库存不能小于0！");
             return resultMap;
         }
 
-        goods.setGoodsStock(newStock);
-        goodsMapper.updateById(goods);
+        seckillGoods.setStockCount(newStock);
+        int res = seckillGoodsMapper.updateById(seckillGoods);
+        if (res != 1) {
+            resultMap.put("result", false);
+            resultMap.put("msg", "更新库存失败！");
+            return resultMap;
+        }
 
         resultMap.put("result", true);
         resultMap.put("msg", "更新库存成功！");
