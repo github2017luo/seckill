@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class IStockServiceImpl implements IStockService {
+public class StockServiceImpl implements IStockService {
 
     @Autowired
     private GoodsMapper goodsMapper;

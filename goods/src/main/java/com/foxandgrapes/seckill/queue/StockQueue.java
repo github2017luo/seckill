@@ -14,11 +14,10 @@ public class StockQueue {
     private IStockService stockService;
 
     @RabbitListener(queues = "stock_queue")
-    public void updateStock(String msg) {
-        // msg为商品的ID
-        System.out.println("stock_queue接受消息：" + msg);
+    public void updateStock(Long goodsId) {
+        System.out.println("stock_queue接受消息：" + goodsId);
 
-        Map<String, Object> resultMap = stockService.updateStock(Long.valueOf(msg), 0, 1);
+        Map<String, Object> resultMap = stockService.updateStock(goodsId, 0, 1);
 
         if (!(boolean) resultMap.get("result")) {
             System.out.println("stock_queue处理消息失败：" + resultMap.get("msg").toString());

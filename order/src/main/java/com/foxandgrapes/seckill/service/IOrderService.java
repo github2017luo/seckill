@@ -14,5 +14,19 @@ import java.util.Map;
  * @since 2021-01-06
  */
 public interface IOrderService extends IService<Order> {
-    public Map<String, Object> createOrder(Long seckillGoodsId, Long userId);
+
+    /**
+     * 在内存中创建订单
+     * @param seckillGoodsId
+     * @param userId
+     * @return
+     */
+    Map<String, Object> createOrder(Long seckillGoodsId, Long userId);
+
+    /**
+     * 将订单写入到数据库
+     * @param order
+     * @return
+     */
+    Map<String, Object> insertOrder(Order order);
 }

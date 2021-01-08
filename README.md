@@ -1,13 +1,19 @@
-# seckill
-秒杀系统
+# seckill 秒杀系统
+    
 
 # 系统环境
 ## Linux环境：centos7 [CentOS-7-x86_64-DVD-2009]<br>安装docker：yum install docker [Version:1.13.1]
-## 在docker中拉取镜像：
-1、mysql [Server version: 8.0.22 MySQL Community Server - GPL]  端口映射 [3306->3306]
-<br>2、redis [Redis server v=6.0.9] 端口映射 [6379->6379]
-<br>3、rebbitmq
+## 在docker中拉取镜像以及创建容器：
+    1、mysql [Server version: 8.0.22 MySQL Community Server - GPL]  端口映射 [3306->3306]
+    2、redis [Redis server v=6.0.9] 端口映射 [6379->6379]
+    3、rebbitmq [RabbitMQ 3.8.9 Erlang 23.2.1] 端口映射 [15672->15672, 5672->5672]
 
+## 微服务对应端口
+    server:         9000
+    time-server:    8000
+    goods:          7000
+    user:           5000
+    order:          4000
 
 ## 数据库建表语句
 ### 用户表
@@ -32,7 +38,7 @@
 
 ### 订单表
     CREATE TABLE `tb_order` (
-      `id` bigint NOT NULL AUTO_INCREMENT COMMENT '订单ID',
+      `id` bigint NOT NULL COMMENT '订单ID',
       `user_id` bigint DEFAULT NULL COMMENT '用户ID',
       `goods_id` bigint DEFAULT NULL COMMENT '商品ID',
       `goods_name` varchar(16) DEFAULT NULL COMMENT '冗余过来的商品名称',

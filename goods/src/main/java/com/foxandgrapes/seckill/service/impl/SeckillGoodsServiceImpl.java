@@ -9,6 +9,7 @@ import com.foxandgrapes.seckill.service.ISeckillGoodsService;
 import com.foxandgrapes.seckill.service.ITimeController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -33,6 +34,8 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
     private SeckillGoodsMapper seckillGoodsMapper;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;    // 专门来处理存放数值的
     @Autowired
     private ITimeController timeController;
     @Autowired
@@ -82,6 +85,9 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
         // 添加商品缓存
         Goods goods = goodsMapper.selectById(seckillGoods.getGoodsId());
         redisTemplate.opsForValue().set("GOODS_" + goods.getId(), goods, diff, TimeUnit.SECONDS);
+
+        // 添加秒杀商品的数量（将数量单独保存）
+        stringRedisTemplate.opsForValue().set("SECKILL_GOODS_COUNT_" + seckillGoods.getGoodsId(), seckillGoods.getStockCount().toString(), diff, TimeUnit.SECONDS);
 
         resultMap.put("result", true);
         resultMap.put("msg", "秒杀商品添加成功并缓存成功!");

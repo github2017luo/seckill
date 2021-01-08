@@ -1,15 +1,16 @@
 package com.foxandgrapes.seckill.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.foxandgrapes.seckill.mapper.OrderMapper;
 import com.foxandgrapes.seckill.pojo.Goods;
 import com.foxandgrapes.seckill.pojo.Order;
-import com.foxandgrapes.seckill.mapper.OrderMapper;
 import com.foxandgrapes.seckill.pojo.SeckillGoods;
 import com.foxandgrapes.seckill.service.IOrderService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.foxandgrapes.seckill.service.ITimeController;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -33,9 +34,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    @Autowired
     private ITimeController timeController;
     @Autowired
     private AmqpTemplate amqpTemplate;
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Override
     public Map<String, Object> createOrder(Long seckillGoodsId, Long userId) {
@@ -47,7 +52,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             return resultMap;
         }
 
-        // 从redis中取出秒杀商品信息
+        // 从redis中取出秒杀商品的数量
         SeckillGoods seckillGoods = (SeckillGoods) redisTemplate.opsForValue().get("SECKILL_GOODS_" + seckillGoodsId);
 
         if (seckillGoods == null) {
@@ -76,24 +81,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         // 有秒杀商品，以及到活动时间了，开始秒杀！
-        // 初始化redis中该商品的库存，只初始化一次
-        redisTemplate.opsForValue().setIfAbsent("SECKILL_GOODS_COUNT_" + seckillGoods, seckillGoods.getStockCount());
-
-        if (redisTemplate.opsForValue().decrement("SECKILL_GOODS_COUNT_" + seckillGoods) < 0) {
+        // 生成秒杀订单号！
+        Long orderId = System.currentTimeMillis();
+        // 获取秒杀商品的数量,如果取完后小于0，则说明之前已经没有库存了
+        if (stringRedisTemplate.opsForValue().decrement("SECKILL_GOODS_COUNT_" + seckillGoodsId) < 0) {
             // 归还库存
-            redisTemplate.delete("SECKILL_GOODS_COUNT_" + seckillGoods);
+            stringRedisTemplate.opsForValue().increment("SECKILL_GOODS_COUNT_" + seckillGoodsId);
             resultMap.put("result", false);
             resultMap.put("msg", "商品已售完！");
             return resultMap;
         } else {
             // 加分布式锁,30秒自动释放
-            if (redisTemplate.opsForValue().setIfAbsent("SECKILL_GOODS_KEY_" + seckillGoods, userId, 30,
+            if (redisTemplate.opsForValue().setIfAbsent("SECKILL_GOODS_KEY_" + seckillGoodsId, userId, 30,
                     TimeUnit.SECONDS)) {
                 try {
-                    // 抢到商品了！生成秒杀订单号！
-                    long orderId = System.currentTimeMillis();
                     // 从商品信息从redis中取出来
-                    Goods goods = (Goods) redisTemplate.opsForValue().get("GOODS_" + seckillGoods.getGoodsId());
+                    Goods goods = (Goods) redisTemplate.opsForValue().get("GOODS_" + seckillGoodsId);
                     // 将订单信息写入到消息队列中待处理
                     Order order = new Order();
                     order.setId(orderId);
@@ -105,15 +108,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     order.setStatus(0);
                     order.setCreateDate(now);
 
-                    redisTemplate.opsForValue().set("ORDER_" + orderId, order);
                     amqpTemplate.convertAndSend("order_queue", order);
                 } catch (Exception e) {
                     // 异常的时候自动释放自己的锁
-                    if (redisTemplate.opsForValue().get("SECKILL_GOODS_KEY_" + seckillGoods).toString().equals(userId.toString())) {
-                        redisTemplate.delete("SECKILL_GOODS_KEY_" + seckillGoods);
+                    if (redisTemplate.opsForValue().get("SECKILL_GOODS_KEY_" + seckillGoodsId).toString().equals(userId.toString())) {
+                        // 删除key
+                        redisTemplate.delete("SECKILL_GOODS_KEY_" + seckillGoodsId);
                     }
                     // 归还库存
-                    redisTemplate.opsForValue().increment("SECKILL_GOODS_COUNT_" + seckillGoods);
+                    stringRedisTemplate.opsForValue().increment("SECKILL_GOODS_COUNT_" + seckillGoodsId);
                     resultMap.put("result", false);
                     resultMap.put("msg", "秒杀期间出现了某种错误！");
                     return resultMap;
@@ -126,11 +129,35 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         // 已抢到商品，释放自己的锁
-        if (redisTemplate.opsForValue().get("SECKILL_GOODS_KEY_" + seckillGoods).toString().equals(userId.toString())) {
-            redisTemplate.delete("SECKILL_GOODS_KEY_" + seckillGoods);
+        if (redisTemplate.opsForValue().get("SECKILL_GOODS_KEY_" + seckillGoodsId).toString().equals(userId.toString())) {
+            redisTemplate.delete("SECKILL_GOODS_KEY_" + seckillGoodsId);
         }
         resultMap.put("result", true);
         resultMap.put("msg", "秒杀成功！");
+        // 添加订单号返回
+        resultMap.put("orderId", orderId);
         return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> insertOrder(Order order) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (order == null){
+            map.put("result", false);
+            map.put("msg", "传入参数有误！");
+            return map;
+        }
+
+        int res = orderMapper.insert(order);
+
+        if (res != 1){
+            map.put("result", false);
+            map.put("msg", "订单写入失败！");
+            return map;
+        }
+
+        map.put("result", true);
+        map.put("msg", "订单成功写入数据库！");
+        return map;
     }
 }
