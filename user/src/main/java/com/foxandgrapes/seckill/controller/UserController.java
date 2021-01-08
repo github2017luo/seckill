@@ -34,11 +34,11 @@ public class UserController {
         // 登录错误时处理
         if (!(boolean) resultMap.get("result")) {
             // 手机号不正确直接返回
-            if (resultMap.get("msg").toString().equals("手机号不正确！")) {
+            if ("手机号不正确！".equals(resultMap.get("msg").toString())) {
                 return resultMap;
             }
             // 没注册则直接注册
-            if (resultMap.get("msg").toString().equals("用户不存在！")) {
+            if ("用户不存在！".equals(resultMap.get("msg").toString())) {
                 resultMap = userService.register(user.getId(), user.getPassword());
             }
         }
