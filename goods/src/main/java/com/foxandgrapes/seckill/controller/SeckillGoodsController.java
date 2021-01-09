@@ -3,12 +3,11 @@ package com.foxandgrapes.seckill.controller;
 
 import com.foxandgrapes.seckill.pojo.SeckillGoods;
 import com.foxandgrapes.seckill.service.ISeckillGoodsService;
+import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -25,7 +24,7 @@ public class SeckillGoodsController {
     private ISeckillGoodsService seckillGoodsService;
 
     @RequestMapping("/insertSeckillGoods")
-    public Map<String, Object> insertSeckillGoods(@RequestBody SeckillGoods seckillGoods) {
+    public RespBean insertSeckillGoods(@RequestBody SeckillGoods seckillGoods) {
         return seckillGoodsService.insertSeckillGoods(seckillGoods);
     }
 }

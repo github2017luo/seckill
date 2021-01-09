@@ -1,9 +1,8 @@
 package com.foxandgrapes.seckill.service;
 
-import com.foxandgrapes.seckill.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.Map;
+import com.foxandgrapes.seckill.pojo.User;
+import com.foxandgrapes.seckill.vo.RespBean;
 
 /**
  * <p>
@@ -15,7 +14,7 @@ import java.util.Map;
  */
 public interface IUserService extends IService<User> {
 
-    Map<String, Object> login(Long userId, String password);
+    RespBean login(Long userId, String password);
 
-    Map<String, Object> register(Long userId, String password);
+    RespBean register(Long userId, String password);
 }

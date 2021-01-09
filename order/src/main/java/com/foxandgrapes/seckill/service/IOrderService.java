@@ -1,9 +1,8 @@
 package com.foxandgrapes.seckill.service;
 
-import com.foxandgrapes.seckill.pojo.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.Map;
+import com.foxandgrapes.seckill.pojo.Order;
+import com.foxandgrapes.seckill.vo.RespBean;
 
 /**
  * <p>
@@ -21,21 +20,21 @@ public interface IOrderService extends IService<Order> {
      * @param userId
      * @return
      */
-    Map<String, Object> createOrder(Long seckillGoodsId, Long userId);
+    RespBean createOrder(Long seckillGoodsId, Long userId);
 
     /**
      * 将订单写入到数据库
      * @param order
      * @return
      */
-    Map<String, Object> insertOrder(Order order);
+    RespBean insertOrder(Order order);
 
     /**
      * 获取订单
      * @param orderId
      * @return
      */
-    Map<String, Object> getOrder(Long orderId);
+    RespBean getOrder(Long orderId);
 
-    Map<String, Object> payOrder(Long orderId, Long seckillGoodsId);
+    RespBean payOrder(Long orderId, Long seckillGoodsId);
 }

@@ -1,6 +1,6 @@
 package com.foxandgrapes.seckill.service;
 
-import java.util.Map;
+import com.foxandgrapes.seckill.vo.RespBean;
 
 public interface IStockService {
 
@@ -11,5 +11,5 @@ public interface IStockService {
      * @param output
      * @return
      */
-    Map<String, Object> updateStock(Long goodsId, Integer input, Integer output);
+    RespBean updateStock(Long goodsId, Integer input, Integer output);
 }

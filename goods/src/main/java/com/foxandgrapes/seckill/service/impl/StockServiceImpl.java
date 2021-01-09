@@ -3,11 +3,9 @@ package com.foxandgrapes.seckill.service.impl;
 import com.foxandgrapes.seckill.mapper.SeckillGoodsMapper;
 import com.foxandgrapes.seckill.pojo.SeckillGoods;
 import com.foxandgrapes.seckill.service.IStockService;
+import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class StockServiceImpl implements IStockService {
@@ -16,43 +14,29 @@ public class StockServiceImpl implements IStockService {
     private SeckillGoodsMapper seckillGoodsMapper;
 
     @Override
-    public Map<String, Object> updateStock(Long seckillGoodsId, Integer inputStock, Integer outputStock) {
-
-        Map<String, Object> resultMap = new HashMap<>();
+    public RespBean updateStock(Long seckillGoodsId, Integer inputStock, Integer outputStock) {
 
         if (seckillGoodsId == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "秒杀商品ID不能为空！");
-            return resultMap;
+            return RespBean.error("秒杀商品ID不能为空！");
         }
         if (inputStock == 0 && outputStock == 0) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "入库数量和出库数量不能同时为0！");
-            return resultMap;
+            return RespBean.error("入库数量和出库数量不能同时为0！");
         }
         SeckillGoods seckillGoods = seckillGoodsMapper.selectById(seckillGoodsId);
         if (seckillGoods == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "该秒杀商品不存在！");
-            return resultMap;
+            return RespBean.error("该秒杀商品不存在！");
         }
         int newStock = seckillGoods.getSeckillStock() + inputStock - outputStock;
         if (newStock < 0) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "新的库存不能小于0！");
-            return resultMap;
+            return RespBean.error("新的库存不能小于0！");
         }
 
         seckillGoods.setSeckillStock(newStock);
         int res = seckillGoodsMapper.updateById(seckillGoods);
         if (res != 1) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "更新库存失败！");
-            return resultMap;
+            return RespBean.error("更新库存失败！");
         }
 
-        resultMap.put("result", true);
-        resultMap.put("msg", "更新库存成功！");
-        return resultMap;
+        return RespBean.success( "更新库存成功！",null);
     }
 }

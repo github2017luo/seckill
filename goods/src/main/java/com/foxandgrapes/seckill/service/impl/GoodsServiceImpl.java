@@ -8,6 +8,7 @@ import com.foxandgrapes.seckill.pojo.Goods;
 import com.foxandgrapes.seckill.pojo.SeckillGoods;
 import com.foxandgrapes.seckill.service.IGoodsService;
 import com.foxandgrapes.seckill.service.ITimeController;
+import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -35,45 +36,34 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     private ITimeController timeController;
 
     @Override
-    public Map<String, Object> getGoodsPage(Integer pageIndex, Integer pageSize) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public RespBean getGoodsPage(Integer pageIndex, Integer pageSize) {
 
         // 分页查询
         IPage<Goods> page = new Page<>(pageIndex, pageSize);
         IPage<Goods> goodsPage = goodsMapper.selectPage(page, null);
 
         if (goodsPage == null || goodsPage.getRecords().size() == 0) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "商品信息获取失败！");
-            return resultMap;
+            return RespBean.error( "商品信息获取失败！");
         }
 
         // 添加秒杀信息
         goodsPage.getRecords().forEach(goods -> getSeckillDetail(goods));
 
-        resultMap.put("result", true);
-        resultMap.put("msg", "商品列表获取成功！");
-        resultMap.put("goodsPage", goodsPage);
-        return resultMap;
+        return RespBean.success("商品列表获取成功！", goodsPage);
     }
 
     @Override
-    public Map<String, Object> getGoods(Long id) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public RespBean getGoods(Long id) {
+
         Goods goods = goodsMapper.selectById(id);
         if (goods == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "查询无果！");
-            return resultMap;
+            return RespBean.error("查询无果！");
         }
 
         // 添加秒杀信息
         getSeckillDetail(goods);
 
-        resultMap.put("result", true);
-        resultMap.put("msg", "商品获取成功！");
-        resultMap.put("goods", goods);
-        return resultMap;
+        return RespBean.success("商品获取成功！", goods);
     }
 
     private void getSeckillDetail(Goods goods) {

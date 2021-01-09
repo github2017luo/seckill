@@ -5,11 +5,10 @@ import com.foxandgrapes.seckill.mapper.UserMapper;
 import com.foxandgrapes.seckill.pojo.User;
 import com.foxandgrapes.seckill.service.IUserService;
 import com.foxandgrapes.seckill.utils.MD5Util;
+import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,31 +33,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     @Override
-    public Map<String, Object> login(Long userId, String password) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public RespBean login(Long userId, String password) {
 
         if (!isMobileNO(userId)) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "手机号不正确！");
-            return resultMap;
+            return RespBean.error("手机号不正确！");
         }
 
         User user = userMapper.selectById(userId);
         if (user == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "用户不存在！");
-            return resultMap;
+            return RespBean.error("用户不存在！");
         }
 
         if (!user.getPassword().equals(MD5Util.fromPassToDBPass(password, user.getSalt()))) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "密码错误！");
-            return resultMap;
+            return RespBean.error("密码错误！");
         }
 
-        resultMap.put("result", true);
-        resultMap.put("msg", "用户登录成功！");
-        return resultMap;
+        return RespBean.success("用户登录成功！", null);
     }
 
     /**
@@ -68,35 +58,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     @Override
-    public Map<String, Object> register(Long userId, String password) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public RespBean register(Long userId, String password) {
 
         if (!isMobileNO(userId)) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "手机号不正确！");
-            return resultMap;
+            return RespBean.error("手机号不正确！");
         }
 
         User user = userMapper.selectById(userId);
         if (user != null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "用户已存在！注册失败！");
-            return resultMap;
+            return RespBean.error("用户已存在！注册失败！");
         }
 
         String randomSalt = MD5Util.getRandomSalt();
         user = new User(userId, MD5Util.fromPassToDBPass(password, randomSalt), randomSalt);
 
         int res = userMapper.insert(user);
-        if (res == 0) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "注册失败！");
+        if (res != 1) {
+            return RespBean.error("注册失败！");
         }
 
-        resultMap.put("result", true);
-        resultMap.put("msg", "用户注册成功");
-        resultMap.put("user", user);
-        return resultMap;
+        return RespBean.success("用户注册成功", null);
     }
 
     /**

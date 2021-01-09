@@ -2,12 +2,11 @@ package com.foxandgrapes.seckill.controller;
 
 
 import com.foxandgrapes.seckill.service.IGoodsService;
+import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -24,13 +23,13 @@ public class GoodsController {
     private IGoodsService goodsService;
 
     @RequestMapping("/getGoodsPage/{pageIndex}/{pageZise}")
-    public Map<String, Object> getGoodsList(@PathVariable("pageIndex") Integer pageIndex,
-                                            @PathVariable("pageZise") Integer pageZise) {
+    public RespBean getGoodsList(@PathVariable("pageIndex") Integer pageIndex,
+                                 @PathVariable("pageZise") Integer pageZise) {
         return goodsService.getGoodsPage(pageIndex, pageZise);
     }
 
     @RequestMapping("/getGoods/{id}")
-    public Map<String, Object> getGoods(@PathVariable("id") Long id) {
+    public RespBean getGoods(@PathVariable("id") Long id) {
         return goodsService.getGoods(id);
     }
 }

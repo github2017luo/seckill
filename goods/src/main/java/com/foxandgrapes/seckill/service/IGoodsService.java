@@ -1,9 +1,8 @@
 package com.foxandgrapes.seckill.service;
 
-import com.foxandgrapes.seckill.pojo.Goods;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.Map;
+import com.foxandgrapes.seckill.pojo.Goods;
+import com.foxandgrapes.seckill.vo.RespBean;
 
 /**
  * <p>
@@ -15,7 +14,7 @@ import java.util.Map;
  */
 public interface IGoodsService extends IService<Goods> {
 
-    Map<String, Object> getGoodsPage(Integer pageIndex, Integer pageSize);
+    RespBean getGoodsPage(Integer pageIndex, Integer pageSize);
 
-    Map<String, Object> getGoods(Long id);
+    RespBean getGoods(Long id);
 }

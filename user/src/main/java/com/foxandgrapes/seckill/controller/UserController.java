@@ -3,6 +3,7 @@ package com.foxandgrapes.seckill.controller;
 
 import com.foxandgrapes.seckill.pojo.User;
 import com.foxandgrapes.seckill.service.IUserService;
+import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 /**
  * <p>
@@ -27,24 +27,24 @@ public class UserController {
     private IUserService userService;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody User user, HttpServletRequest request) {
-        Map<String, Object> resultMap = userService.login(user.getId(), user.getPassword());
+    public RespBean login(@RequestBody User user, HttpServletRequest request) {
+        RespBean respBean = userService.login(user.getId(), user.getPassword());
         // 登录错误时处理
-        if (!(boolean) resultMap.get("result")) {
+        if (!respBean.getRet()) {
             // 手机号不正确直接返回
-            if ("手机号不正确！".equals(resultMap.get("msg").toString())) {
-                return resultMap;
+            if ("手机号不正确！".equals(respBean.getMsg())) {
+                return respBean;
             }
             // 没注册则直接注册
-            if ("用户不存在！".equals(resultMap.get("msg").toString())) {
-                resultMap = userService.register(user.getId(), user.getPassword());
+            if ("用户不存在！".equals(respBean.getMsg())) {
+                respBean = userService.register(user.getId(), user.getPassword());
             }
         }
-        if ((boolean) resultMap.get("result")) {
+        if (respBean.getRet()) {
             HttpSession session = request.getSession();
             // 将登录信息保存到redis
-            session.setAttribute("user_" + user.getId(), true);
+            session.setAttribute("user", true);
         }
-        return resultMap;
+        return respBean;
     }
 }

@@ -7,6 +7,7 @@ import com.foxandgrapes.seckill.pojo.Order;
 import com.foxandgrapes.seckill.pojo.SeckillGoods;
 import com.foxandgrapes.seckill.service.IOrderService;
 import com.foxandgrapes.seckill.service.ITimeController;
+import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,8 +17,6 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,22 +42,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderMapper orderMapper;
 
     @Override
-    public Map<String, Object> createOrder(Long seckillGoodsId, Long userId) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public RespBean createOrder(Long seckillGoodsId, Long userId) {
 
         if (seckillGoodsId == null || userId == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "商品ID或用户ID不能为空！");
-            return resultMap;
+            return RespBean.error("商品ID或用户ID不能为空！");
         }
 
         // 从redis中取出秒杀商品的数量
         SeckillGoods seckillGoods = (SeckillGoods) redisTemplate.opsForValue().get("SECKILL_GOODS_" + seckillGoodsId);
 
         if (seckillGoods == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "活动已结束！");
-            return resultMap;
+            return RespBean.error("活动已结束！");
         }
 
         // 获取当前时间，判断是否为活动时间
@@ -69,15 +63,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             // 没到秒杀时间或已过期
             if (seckillGoods.getStartDate().getTime() > now.getTime() ||
                     now.getTime() > seckillGoods.getEndDate().getTime()) {
-                resultMap.put("result", false);
-                resultMap.put("msg", "活动还没开始或已结束！");
-                return resultMap;
+                return RespBean.error("活动还没开始或已结束！");
             }
         } catch (ParseException e) {
             e.printStackTrace();
-            resultMap.put("result", false);
-            resultMap.put("msg", "时间转换出现错误！");
-            return resultMap;
+            return RespBean.error("时间转换出现错误！");
         }
 
         // 有秒杀商品，以及到活动时间了，开始秒杀！
@@ -87,9 +77,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (stringRedisTemplate.opsForValue().decrement("SECKILL_GOODS_COUNT_" + seckillGoodsId) < 0) {
             // 归还库存
             stringRedisTemplate.opsForValue().increment("SECKILL_GOODS_COUNT_" + seckillGoodsId);
-            resultMap.put("result", false);
-            resultMap.put("msg", "商品已售完！");
-            return resultMap;
+            return RespBean.error("商品已售完！");
         } else {
             // 加分布式锁,30秒自动释放
             if (redisTemplate.opsForValue().setIfAbsent("SECKILL_GOODS_KEY_" + seckillGoodsId, userId, 30,
@@ -99,6 +87,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     Goods goods = (Goods) redisTemplate.opsForValue().get("GOODS_" + seckillGoods.getGoodsId());
                     // 将订单信息写入到消息队列中待处理
                     Order order = new Order();
+
                     order.setId(orderId);
                     order.setUserId(userId);
                     order.setSeckillGoodsId(seckillGoodsId);
@@ -118,14 +107,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     // 归还库存
                     stringRedisTemplate.opsForValue().increment("SECKILL_GOODS_COUNT_" + seckillGoodsId);
-                    resultMap.put("result", false);
-                    resultMap.put("msg", "秒杀期间出现了某种错误！");
-                    return resultMap;
+                    return RespBean.error("秒杀期间出现了某种错误！");
                 }
             } else {
-                resultMap.put("result", false);
-                resultMap.put("msg", "就差一点就抢到了！");
-                return resultMap;
+                return RespBean.error("就差一点就抢到了！");
             }
         }
 
@@ -133,74 +118,51 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (redisTemplate.opsForValue().get("SECKILL_GOODS_KEY_" + seckillGoodsId).toString().equals(userId.toString())) {
             redisTemplate.delete("SECKILL_GOODS_KEY_" + seckillGoodsId);
         }
-        resultMap.put("result", true);
-        resultMap.put("msg", "秒杀成功！");
-        // 添加订单号返回
-        resultMap.put("orderId", orderId);
-        return resultMap;
+        return RespBean.success("秒杀成功！", orderId);
     }
 
     @Override
-    public Map<String, Object> insertOrder(Order order) {
-        Map<String, Object> map = new HashMap<String, Object>();
+    public RespBean insertOrder(Order order) {
+
         if (order == null){
-            map.put("result", false);
-            map.put("msg", "传入参数有误！");
-            return map;
+            return RespBean.error("传入参数有误！");
         }
 
         int res = orderMapper.insert(order);
 
         if (res != 1){
-            map.put("result", false);
-            map.put("msg", "订单写入失败！");
-            return map;
+            return RespBean.error("订单写入失败！");
         }
 
-        map.put("result", true);
-        map.put("msg", "订单成功写入数据库！");
-        return map;
+        return RespBean.success( "订单成功写入数据库！", null);
     }
 
     @Override
-    public Map<String, Object> getOrder(Long orderId) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public RespBean getOrder(Long orderId) {
 
         if (orderId == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "订单号不能为空！");
-            return resultMap;
+            return RespBean.error("订单号不能为空！");
         }
 
         Order order = orderMapper.selectById(orderId);
         if (order == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "订单不存在！");
-            return resultMap;
+            return RespBean.error("订单不存在！");
         }
 
-        resultMap.put("result", true);
-        resultMap.put("msg", "获取订单成功！");
-        resultMap.put("order", order);
-        return resultMap;
+        return RespBean.success( "获取订单成功！", order);
     }
 
     @Override
-    public Map<String, Object> payOrder(Long orderId, Long seckillGoodsId) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public RespBean payOrder(Long orderId, Long seckillGoodsId) {
 
         if (orderId == null || seckillGoodsId == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "订单有误！");
-            return resultMap;
+            return RespBean.error("订单有误！");
         }
 
         Order order = orderMapper.selectById(orderId);
 
         if (order == null) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "订单不存在！");
-            return resultMap;
+            return RespBean.error("订单不存在！");
         }
 
         // 设置已支付：1
@@ -210,16 +172,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int res = orderMapper.updateById(order);
 
         if (res != 1) {
-            resultMap.put("result", false);
-            resultMap.put("msg", "订单更新失败！");
-            return resultMap;
+            return RespBean.error("订单更新失败！");
         }
 
         // 放入库存队列，后续慢慢处理
         amqpTemplate.convertAndSend("stock_queue", seckillGoodsId);
 
-        resultMap.put("result", true);
-        resultMap.put("msg", "订单更新完成！");
-        return resultMap;
+        return RespBean.success("订单更新完成！", null);
     }
 }

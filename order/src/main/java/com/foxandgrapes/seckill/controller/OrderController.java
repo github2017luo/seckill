@@ -3,6 +3,7 @@ package com.foxandgrapes.seckill.controller;
 
 import com.foxandgrapes.seckill.pojo.User;
 import com.foxandgrapes.seckill.service.IOrderService;
+import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +28,12 @@ public class OrderController {
     private IOrderService orderService;
 
     @RequestMapping("/createOrder/{seckillGoodsId}")
-    public Map<String, Object> createOrder(@PathVariable("seckillGoodsId") Long seckillGoodsId,
-                                             HttpServletRequest request) {
+    public RespBean createOrder(@PathVariable("seckillGoodsId") Long seckillGoodsId,
+                                HttpServletRequest request) {
         // Map<String, Object> resultMap = new HashMap<String, Object>();
         // HttpSession httpSession = request.getSession();
         // User user = (User) httpSession.getAttribute("user");
-
+        //
         // 测试放行
         // if (user == null){
         //     resultMap.put("result", false);
@@ -44,7 +45,7 @@ public class OrderController {
     }
 
     @RequestMapping("/getOrder/{orderId}")
-    public Map<String, Object> getOrder(@PathVariable("orderId") Long orderId,
+    public RespBean getOrder(@PathVariable("orderId") Long orderId,
                                         HttpServletRequest request) {
         // Map<String, Object> resultMap = new HashMap<String, Object>();
         // HttpSession httpSession = request.getSession();
@@ -60,7 +61,7 @@ public class OrderController {
     }
 
     @RequestMapping("/payOrder/{orderId}/{seckillGoodsId}")
-    public Map<String, Object> payOrder(@PathVariable("orderId") Long orderId,
+    public RespBean payOrder(@PathVariable("orderId") Long orderId,
                                         @PathVariable("seckillGoodsId") Long seckillGoodsId,
                                         HttpServletRequest request) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -78,9 +79,7 @@ public class OrderController {
         boolean isPay = pay();
 
         if (!isPay){
-            resultMap.put("result", false);
-            resultMap.put("msg", "支付失败！");
-            return resultMap;
+            return RespBean.error("支付失败！");
         }
 
         return orderService.payOrder(orderId, seckillGoodsId);
