@@ -82,7 +82,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 if (now.getTime() <= seckillGoods.getEndDate().getTime()) {
                     // 添加秒杀信息
                     goods.setSeckillGoods(seckillGoods);
-                    goods.setNowTime(now);
                 }
 
             } catch (ParseException e) {
