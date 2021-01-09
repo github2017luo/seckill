@@ -42,8 +42,8 @@ public class UserController {
         }
         if (respBean.getRet()) {
             HttpSession session = request.getSession();
-            // 将登录信息保存到redis
-            session.setAttribute("user", true);
+            // 将登录后的用户信息保存到redis，为了订单时可以获取！
+            session.setAttribute("user", user);
         }
         return respBean;
     }

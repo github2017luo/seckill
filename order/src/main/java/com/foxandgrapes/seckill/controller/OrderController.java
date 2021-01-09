@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>
@@ -30,15 +28,13 @@ public class OrderController {
     @RequestMapping("/createOrder/{seckillGoodsId}")
     public RespBean createOrder(@PathVariable("seckillGoodsId") Long seckillGoodsId,
                                 HttpServletRequest request) {
-        // Map<String, Object> resultMap = new HashMap<String, Object>();
-        // HttpSession httpSession = request.getSession();
-        // User user = (User) httpSession.getAttribute("user");
-        //
+
+        HttpSession httpSession = request.getSession();
+        User user = (User) httpSession.getAttribute("user");
+
         // 测试放行
         // if (user == null){
-        //     resultMap.put("result", false);
-        //     resultMap.put("msg", "用户没有登录不能购买！");
-        //     return resultMap;
+        //     return RespBean.error("用户没有登录不能购买！");
         // }
         // return orderService.createOrder(seckillGoodsId, user.getId());
         return orderService.createOrder(seckillGoodsId, 13729044632L);
@@ -47,15 +43,13 @@ public class OrderController {
     @RequestMapping("/getOrder/{orderId}")
     public RespBean getOrder(@PathVariable("orderId") Long orderId,
                                         HttpServletRequest request) {
-        // Map<String, Object> resultMap = new HashMap<String, Object>();
-        // HttpSession httpSession = request.getSession();
-        // User user = (User) httpSession.getAttribute("user");
+
+        HttpSession httpSession = request.getSession();
+        User user = (User) httpSession.getAttribute("user");
 
         // 测试放行
         // if (user == null){
-        //     resultMap.put("result", false);
-        //     resultMap.put("msg", "用户没有登录不能查询！");
-        //     return resultMap;
+        //     return RespBean.error("用户没有登录不能查询！");
         // }
         return orderService.getOrder(orderId);
     }
@@ -64,15 +58,13 @@ public class OrderController {
     public RespBean payOrder(@PathVariable("orderId") Long orderId,
                                         @PathVariable("seckillGoodsId") Long seckillGoodsId,
                                         HttpServletRequest request) {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
+
         HttpSession httpSession = request.getSession();
         User user = (User) httpSession.getAttribute("user");
 
         // 测试放行
         // if (user == null){
-        //     resultMap.put("result", false);
-        //     resultMap.put("msg", "用户没有登录不能支付！");
-        //     return resultMap;
+        //     return RespBean.error("用户没有登录不能支付！");
         // }
 
         // 调用支付
