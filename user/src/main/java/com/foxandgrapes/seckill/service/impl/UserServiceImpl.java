@@ -58,7 +58,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         resultMap.put("result", true);
         resultMap.put("msg", "用户登录成功！");
-        resultMap.put("user", user);
         return resultMap;
     }
 

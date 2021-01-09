@@ -42,8 +42,8 @@ public class UserController {
         }
         if ((boolean) resultMap.get("result")) {
             HttpSession session = request.getSession();
-            // 将登录的用户信息保存到redis
-            session.setAttribute("user_" + user.getId(), resultMap.get("user"));
+            // 将登录信息保存到redis
+            session.setAttribute("user_" + user.getId(), true);
         }
         return resultMap;
     }
