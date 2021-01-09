@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface IGoodsService extends IService<Goods> {
 
-    Map<String, Object> getGoodsList();
+    Map<String, Object> getGoodsPage(Integer pageIndex, Integer pageSize);
 
     Map<String, Object> getGoods(Long id);
 }

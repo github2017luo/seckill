@@ -23,9 +23,10 @@ public class GoodsController {
     @Autowired
     private IGoodsService goodsService;
 
-    @RequestMapping("/getGoodsList")
-    public Map<String, Object> getGoodsList() {
-        return goodsService.getGoodsList();
+    @RequestMapping("/getGoodsPage/{pageIndex}/{pageZise}")
+    public Map<String, Object> getGoodsList(@PathVariable("pageIndex") Integer pageIndex,
+                                            @PathVariable("pageZise") Integer pageZise) {
+        return goodsService.getGoodsPage(pageIndex, pageZise);
     }
 
     @RequestMapping("/getGoods/{id}")

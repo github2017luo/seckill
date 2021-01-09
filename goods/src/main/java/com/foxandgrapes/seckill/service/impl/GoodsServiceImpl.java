@@ -1,5 +1,7 @@
 package com.foxandgrapes.seckill.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.foxandgrapes.seckill.mapper.GoodsMapper;
 import com.foxandgrapes.seckill.pojo.Goods;
@@ -33,23 +35,25 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     private ITimeController timeController;
 
     @Override
-    public Map<String, Object> getGoodsList() {
+    public Map<String, Object> getGoodsPage(Integer pageIndex, Integer pageSize) {
         Map<String, Object> resultMap = new HashMap<>();
-        List<Goods> goodsList = goodsMapper.selectList(null);
-        if (goodsList == null || goodsList.size() == 0) {
+
+        // 分页查询
+        IPage<Goods> page = new Page<>(pageIndex, pageSize);
+        IPage<Goods> goodsPage = goodsMapper.selectPage(page, null);
+
+        if (goodsPage == null || goodsPage.getRecords().size() == 0) {
             resultMap.put("result", false);
             resultMap.put("msg", "商品信息获取失败！");
             return resultMap;
         }
 
         // 添加秒杀信息
-        for (Goods goods : goodsList) {
-            getSeckillDetail(goods);
-        }
+        goodsPage.getRecords().forEach(goods -> getSeckillDetail(goods));
 
         resultMap.put("result", true);
         resultMap.put("msg", "商品列表获取成功！");
-        resultMap.put("goodsList", goodsList);
+        resultMap.put("goodsPage", goodsPage);
         return resultMap;
     }
 
