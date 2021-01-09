@@ -81,7 +81,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 // 在秒杀结束时间前
                 if (now.getTime() <= seckillGoods.getEndDate().getTime()) {
                     // 添加秒杀信息
-                    goods.setSeckillGoods(seckillGoods);
+                    goods.setSeckillPrice(seckillGoods.getSeckillPrice());
                 }
 
             } catch (ParseException e) {

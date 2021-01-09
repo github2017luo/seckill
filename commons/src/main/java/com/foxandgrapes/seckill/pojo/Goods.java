@@ -61,9 +61,9 @@ public class Goods implements Serializable {
     private BigDecimal goodsPrice;
 
     /**
-     * 秒杀信息
+     * 秒杀价
      */
     @TableField(exist = false)
-    private SeckillGoods seckillGoods;
+    private BigDecimal seckillPrice;
 
 }
