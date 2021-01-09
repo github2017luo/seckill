@@ -38,6 +38,7 @@
       `goods_img` varchar(64) DEFAULT NULL COMMENT '商品图片',
       `goods_detail` longtext COMMENT '商品详情',
       `goods_price` decimal(10,2) DEFAULT '0.00' COMMENT '商品价格',
+      `seckill_id` bigint COMMENT '秒杀商品ID',
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 

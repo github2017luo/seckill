@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,6 +41,8 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
     @Autowired
     private GoodsMapper goodsMapper;
 
+    // 开启事务，因为有两条sql语句
+    @Transactional
     @Override
     public RespBean insertSeckillGoods(SeckillGoods seckillGoods) {
 
@@ -61,6 +64,13 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
         // 生成秒杀商品的id
         seckillGoods.setId(System.currentTimeMillis());
         int res = seckillGoodsMapper.insert(seckillGoods);
+        if (res != 1) {
+            return RespBean.error("秒杀商品添加失败！");
+        }
+
+        // 将该秒杀商品的id存到商品数据库中，每个商品只能有一个秒杀商品
+        goods.setSeckillId(seckillGoods.getId());
+        res = goodsMapper.updateById(goods);
         if (res != 1) {
             return RespBean.error("秒杀商品添加失败！");
         }
