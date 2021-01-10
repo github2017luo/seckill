@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>
@@ -71,4 +73,23 @@ public class Goods implements Serializable {
     @TableField(exist = false)
     private BigDecimal seckillPrice;
 
+    /**
+     * 秒杀库存数量
+     */
+    @TableField(exist = false)
+    private Integer seckillStock;
+
+    /**
+     * 秒杀开始时间
+     */
+    @TableField(exist = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Shanghai")
+    private Date startDate;
+
+    /**
+     * 秒杀结束时间
+     */
+    @TableField(exist = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Shanghai")
+    private Date endDate;
 }
