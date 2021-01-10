@@ -14,16 +14,7 @@ public class GoodsException implements ErrorController {
     public RespBean handleError(HttpServletRequest request) {
 
         Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-        switch (statusCode) {
-            case 404:
-                return RespBean.error("GOODS 404");
-            case 403:
-                return RespBean.error("GOODS 403");
-            case 500:
-                return RespBean.error("GOODS 500");
-            default:
-                return RespBean.error("GOODS 未知错误！");
-        }
+        return  RespBean.error("GOODS " + statusCode);
     }
 
     @Override

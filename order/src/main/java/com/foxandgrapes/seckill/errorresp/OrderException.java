@@ -14,16 +14,8 @@ public class OrderException implements ErrorController {
     public RespBean handleError(HttpServletRequest request) {
 
         Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-        switch (statusCode) {
-            case 404:
-                return RespBean.error("ORDER 404");
-            case 403:
-                return RespBean.error("ORDER 403");
-            case 500:
-                return RespBean.error("ORDER 500");
-            default:
-                return RespBean.error("ORDER 未知错误！");
-        }
+
+        return RespBean.error("ORDER " + statusCode);
     }
 
     @Override
