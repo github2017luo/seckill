@@ -63,7 +63,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         // 添加秒杀信息
         getSeckillDetail(goods);
 
-        return RespBean.success("商品获取成功！", goods);
+        // 为了前端好展示而弄成列表返回
+        List<Goods> list = new ArrayList<>();
+        list.add(goods);
+        return RespBean.success("商品获取成功！", list);
     }
 
     private void getSeckillDetail(Goods goods) {

@@ -4,6 +4,7 @@ package com.foxandgrapes.seckill.controller;
 import com.foxandgrapes.seckill.service.IGoodsService;
 import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author tsk
  * @since 2021-01-06
  */
+@CrossOrigin
 @RestController
 public class GoodsController {
 
