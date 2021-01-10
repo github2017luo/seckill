@@ -1,5 +1,6 @@
 # seckill 秒杀系统
-    
+
+## 前端项目网址：https://github.com/xiaotanwo/seckill_front
 
 # 操作系统
 ## Linux环境：centos7 [CentOS-7-x86_64-DVD-2009]
