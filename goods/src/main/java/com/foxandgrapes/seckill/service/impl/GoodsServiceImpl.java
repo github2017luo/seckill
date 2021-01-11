@@ -11,6 +11,7 @@ import com.foxandgrapes.seckill.service.ITimeController;
 import com.foxandgrapes.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -32,6 +33,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     private GoodsMapper goodsMapper;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private ITimeController timeController;
 
@@ -85,7 +88,9 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 if (now.getTime() <= seckillGoods.getEndDate().getTime()) {
                     // 添加秒杀的信息
                     goods.setSeckillPrice(seckillGoods.getSeckillPrice());
-                    goods.setSeckillStock(seckillGoods.getSeckillStock());
+                    // redis中的库存数是固定的，没有实时刷新，所以不能从这里读取
+                    // 直接从redis中独自保存的库存中读取
+                    goods.setSeckillStock(Integer.valueOf(stringRedisTemplate.opsForValue().get("SECKILL_GOODS_COUNT_" + goods.getSeckillId())));
                     goods.setStartDate(seckillGoods.getStartDate());
                     goods.setEndDate(seckillGoods.getEndDate());
                 }

@@ -34,7 +34,7 @@ public class OrderController {
 
         // 测试放行
         if (user == null){
-            return RespBean.error("用户没有登录不能购买！");
+            return RespBean.error("用户没有登录，不能购买！");
         }
 
         return orderService.createOrder(seckillGoodsId, user.getId());
@@ -50,22 +50,22 @@ public class OrderController {
 
         // 测试放行
         if (user == null){
-            return RespBean.error("用户没有登录不能查询！");
+            return RespBean.error("用户没有登录，不能查询！");
         }
         return orderService.getOrder(orderId);
     }
 
     @RequestMapping("/payOrder/{orderId}/{seckillGoodsId}")
     public RespBean payOrder(@PathVariable("orderId") Long orderId,
-                                        @PathVariable("seckillGoodsId") Long seckillGoodsId,
-                                        HttpServletRequest request) {
+                            @PathVariable("seckillGoodsId") Long seckillGoodsId,
+                            HttpServletRequest request) {
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
         // 测试放行
         if (user == null){
-            return RespBean.error("用户没有登录不能支付！");
+            return RespBean.error("用户没有登录，不能支付！");
         }
 
         // 调用支付

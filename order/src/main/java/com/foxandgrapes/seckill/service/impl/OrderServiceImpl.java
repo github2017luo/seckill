@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -149,7 +151,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             return RespBean.error("订单不存在！");
         }
 
-        return RespBean.success( "获取订单成功！", order);
+        // 为了前端好展示而弄成列表返回
+        List<Order> list = new ArrayList<>();
+        list.add(order);
+        return RespBean.success( "获取订单成功！", list);
     }
 
     @Override
@@ -165,10 +170,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             return RespBean.error("订单不存在！");
         }
 
+        if (order.getStatus() == 1) {
+            return RespBean.error("订单已支付！");
+        }
+
         // 设置已支付：1
         order.setStatus(1);
         // 设置支付时间
-        order.setPayDate(new Date());
+        Date payDate = new Date();
+        order.setPayDate(payDate);
         int res = orderMapper.updateById(order);
 
         if (res != 1) {
@@ -178,6 +188,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 放入库存队列，后续慢慢处理
         amqpTemplate.convertAndSend("stock_queue", seckillGoodsId);
 
-        return RespBean.success("订单更新完成！", null);
+        // 返回时间给前端，可以直接显示（转换格式再返回）
+        return RespBean.success("订单更新完成！", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(payDate));
     }
 }
