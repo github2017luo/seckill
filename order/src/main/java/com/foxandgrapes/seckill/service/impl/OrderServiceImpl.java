@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -57,6 +56,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             return RespBean.error("活动已结束！");
         }
 
+        // 加分布式售完标志，如果该商品的值为false，则说明已经售完，直接返回
+        if (!(boolean) redisTemplate.opsForValue().get("SECKILL_GOODS_KEY_" + seckillGoods.getId())) {
+            return RespBean.error("商品已经售完！");
+        }
+
         // 获取当前时间，判断是否为活动时间
         Date now = null;
         try {
@@ -79,47 +83,36 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (stringRedisTemplate.opsForValue().decrement("SECKILL_GOODS_COUNT_" + seckillGoodsId) < 0) {
             // 归还库存
             stringRedisTemplate.opsForValue().increment("SECKILL_GOODS_COUNT_" + seckillGoodsId);
+            // 设置秒杀商品已经没有库存
+            redisTemplate.opsForValue().set("SECKILL_GOODS_KEY_" + seckillGoods.getId(), false);
             return RespBean.error("商品已售完！");
         } else {
-            // 加分布式锁,30秒自动释放
-            if (redisTemplate.opsForValue().setIfAbsent("SECKILL_GOODS_KEY_" + seckillGoodsId, userId, 30,
-                    TimeUnit.SECONDS)) {
-                try {
-                    // 从商品信息从redis中取出来
-                    Goods goods = (Goods) redisTemplate.opsForValue().get("GOODS_" + seckillGoods.getGoodsId());
-                    // 将订单信息写入到消息队列中待处理
-                    Order order = new Order();
+            try {
+                // 从商品信息从redis中取出来
+                Goods goods = (Goods) redisTemplate.opsForValue().get("GOODS_" + seckillGoods.getGoodsId());
+                // 将订单信息写入到消息队列中待处理
+                Order order = new Order();
 
-                    order.setId(orderId);
-                    order.setUserId(userId);
-                    order.setSeckillGoodsId(seckillGoodsId);
-                    order.setGoodsName(goods.getGoodsName());
-                    order.setGoodsCount(1);
-                    order.setGoodsPrice(seckillGoods.getSeckillPrice());
-                    order.setStatus(0);
-                    order.setCreateDate(now);
+                order.setId(orderId);
+                order.setUserId(userId);
+                order.setSeckillGoodsId(seckillGoodsId);
+                order.setGoodsName(goods.getGoodsName());
+                order.setGoodsCount(1);
+                order.setGoodsPrice(seckillGoods.getSeckillPrice());
+                order.setStatus(0);
+                order.setCreateDate(now);
 
-                    // 放入订单队列，后续慢慢处理
-                    amqpTemplate.convertAndSend("order_queue", order);
-                } catch (Exception e) {
-                    // 异常的时候自动释放自己的锁
-                    if (redisTemplate.opsForValue().get("SECKILL_GOODS_KEY_" + seckillGoodsId).toString().equals(userId.toString())) {
-                        // 删除key
-                        redisTemplate.delete("SECKILL_GOODS_KEY_" + seckillGoodsId);
-                    }
-                    // 归还库存
-                    stringRedisTemplate.opsForValue().increment("SECKILL_GOODS_COUNT_" + seckillGoodsId);
-                    return RespBean.error("秒杀期间出现了某种错误！");
-                }
-            } else {
-                return RespBean.error("就差一点就抢到了！");
+                // 放入订单队列，后续慢慢处理
+                amqpTemplate.convertAndSend("order_queue", order);
+            } catch (Exception e) {
+                // 归还库存
+                stringRedisTemplate.opsForValue().increment("SECKILL_GOODS_COUNT_" + seckillGoodsId);
+                // 由于秒杀失败，库存至少为1，故直接设置为可秒杀
+                redisTemplate.opsForValue().set("SECKILL_GOODS_KEY_" + seckillGoods.getId(), true);
+                return RespBean.error("秒杀期间出现了某种错误！");
             }
         }
 
-        // 已抢到商品，释放自己的锁
-        if (redisTemplate.opsForValue().get("SECKILL_GOODS_KEY_" + seckillGoodsId).toString().equals(userId.toString())) {
-            redisTemplate.delete("SECKILL_GOODS_KEY_" + seckillGoodsId);
-        }
         return RespBean.success("秒杀成功！", orderId);
     }
 
