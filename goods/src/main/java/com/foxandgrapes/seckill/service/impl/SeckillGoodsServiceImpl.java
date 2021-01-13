@@ -100,8 +100,6 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
 
         // 添加秒杀商品的数量（将数量单独保存）
         stringRedisTemplate.opsForValue().set("SECKILL_GOODS_COUNT_" + seckillGoods.getId(), seckillGoods.getSeckillStock().toString(), diff, TimeUnit.SECONDS);
-        // 设置秒杀商品是否还有库存
-        redisTemplate.opsForValue().set("SECKILL_GOODS_KEY_" + seckillGoods.getId(), true, diff, TimeUnit.SECONDS);
 
         return new RespBean(true, "秒杀商品添加成功并缓存成功!", null);
     }

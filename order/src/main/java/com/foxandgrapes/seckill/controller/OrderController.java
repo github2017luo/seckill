@@ -33,12 +33,12 @@ public class OrderController {
         User user = (User) session.getAttribute("user");
 
         // 测试放行
-        if (user == null){
-            return RespBean.error("用户没有登录，不能购买！");
-        }
+        // if (user == null){
+        //     return RespBean.error("用户没有登录，不能购买！");
+        // }
 
-        return orderService.createOrder(seckillGoodsId, user.getId());
-        // return orderService.createOrder(seckillGoodsId, 13729044632L);
+        // return orderService.createOrder(seckillGoodsId, user.getId());
+        return orderService.createOrder(seckillGoodsId, 13729069707L);
     }
 
     @RequestMapping("/getOrder/{orderId}")
