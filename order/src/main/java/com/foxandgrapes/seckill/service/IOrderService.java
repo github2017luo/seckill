@@ -3,7 +3,6 @@ package com.foxandgrapes.seckill.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.foxandgrapes.seckill.pojo.Order;
 import com.foxandgrapes.seckill.vo.RespBean;
-import org.apache.zookeeper.KeeperException;
 
 /**
  * <p>
@@ -21,7 +20,7 @@ public interface IOrderService extends IService<Order> {
      * @param userId
      * @return
      */
-    RespBean createOrder(Long seckillGoodsId, Long userId) throws KeeperException, InterruptedException;
+    RespBean createOrder(Long seckillGoodsId, Long userId);
 
     /**
      * 将订单写入到数据库
@@ -37,5 +36,11 @@ public interface IOrderService extends IService<Order> {
      */
     RespBean getOrder(Long orderId);
 
+    /**
+     * 支付订单
+     * @param orderId
+     * @param seckillGoodsId
+     * @return
+     */
     RespBean payOrder(Long orderId, Long seckillGoodsId);
 }

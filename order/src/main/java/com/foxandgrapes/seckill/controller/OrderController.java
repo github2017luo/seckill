@@ -49,9 +49,10 @@ public class OrderController {
         User user = (User) session.getAttribute("user");
 
         // 测试放行
-        if (user == null){
-            return RespBean.error("用户没有登录，不能查询！");
-        }
+        // if (user == null){
+        //     return RespBean.error("用户没有登录，不能查询！");
+        // }
+
         return orderService.getOrder(orderId);
     }
 
@@ -64,9 +65,9 @@ public class OrderController {
         User user = (User) session.getAttribute("user");
 
         // 测试放行
-        if (user == null){
-            return RespBean.error("用户没有登录，不能支付！");
-        }
+        // if (user == null){
+        //     return RespBean.error("用户没有登录，不能支付！");
+        // }
 
         // 调用支付
         boolean isPay = pay();

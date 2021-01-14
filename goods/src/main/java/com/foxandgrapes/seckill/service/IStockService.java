@@ -6,10 +6,17 @@ public interface IStockService {
 
     /**
      * 更新商品为ID的库存数量
-     * @param goodsId
+     * @param seckillGoodsId
      * @param input
      * @param output
      * @return
      */
-    RespBean updateStock(Long goodsId, Integer input, Integer output);
+    RespBean updateStock(Long seckillGoodsId, Integer input, Integer output);
+
+    /**
+     * 库存减一
+     * @param seckillGoodsId
+     * @return
+     */
+    RespBean decrementStock(Long seckillGoodsId);
 }

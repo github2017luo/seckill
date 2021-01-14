@@ -16,7 +16,8 @@ public class StockQueue {
     public void updateStock(Long seckillGoodsId) {
         System.out.println("stock_queue接受消息：" + seckillGoodsId);
 
-        RespBean respBean = stockService.updateStock(seckillGoodsId, 0, 1);
+        // RespBean respBean = stockService.updateStock(seckillGoodsId, 0, 1);
+        RespBean respBean = stockService.decrementStock(seckillGoodsId);
 
         if (!respBean.getRet()) {
             System.out.println("stock_queue处理消息失败：" + respBean.getMsg());

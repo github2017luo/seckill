@@ -9,7 +9,6 @@ import com.foxandgrapes.seckill.service.IOrderService;
 import com.foxandgrapes.seckill.service.ITimeController;
 import com.foxandgrapes.seckill.vo.RespBean;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -54,7 +53,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public static ConcurrentHashMap<Long, Boolean> getProductSoldOutMap() { return productSoldOutMap; }
 
     @Override
-    public RespBean createOrder(Long seckillGoodsId, Long userId) throws KeeperException, InterruptedException {
+    public RespBean createOrder(Long seckillGoodsId, Long userId) {
 
         if (seckillGoodsId == null || userId == null) {
             return RespBean.error("商品ID或用户ID不能为空！");
@@ -97,11 +96,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             // 在JVM中直接设置已售完
             productSoldOutMap.put(seckillGoodsId, true);
             // 设置zk的商品售完的标志
-            if (zkClient.exists("product_sold_out/" + seckillGoods, true) == null) {
-                zkClient.create("product_sold_out/" + seckillGoods, "true".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            try {
+                if (zkClient.exists("/product_sold_out_flag/" + seckillGoodsId, true) == null) {
+                    zkClient.create("/product_sold_out_flag/" + seckillGoodsId, "true".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                } else {
+                    zkClient.setData("/product_sold_out_flag/" + seckillGoodsId, "true".getBytes(), -1);
+                }
+                // 监听售完标志值的变化
+                zkClient.exists("/product_sold_out_flag/" + seckillGoodsId, true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            // 监听售完标志值的变化
-            zkClient.exists("product_sold_out/" + seckillGoods, true);
             return RespBean.error("商品已售完！");
         } else {
             try {
@@ -129,8 +134,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     productSoldOutMap.remove(seckillGoodsId);
                 }
                 // 修改zk的商品售完的标志
-                if (zkClient.exists("product_sold_out/" + seckillGoods, true) == null) {
-                    zkClient.setData("product_sold_out/" + seckillGoods, "false".getBytes(), -1);
+                try {
+                    if (zkClient.exists("/product_sold_out_flag/" + seckillGoodsId, true) != null) {
+                        zkClient.setData("/product_sold_out_flag/" + seckillGoodsId, "false".getBytes(), -1);
+                    }
+                } catch (Exception exception) {
+                    exception.printStackTrace();
                 }
                 return RespBean.error("秒杀期间出现了某种错误！");
             }

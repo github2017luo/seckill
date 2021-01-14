@@ -36,13 +36,13 @@
         <spring-cloud.version>Hoxton.SR9</spring-cloud.version>
         <mybatis-plus-boot-starter.version>3.4.1</mybatis-plus-boot-starter.version>
         <commons.version>1.0.0</commons.version>
-        <zookeeper.version>3.4.12</zookeeper.version>
+        <zookeeper.version>3.4.14</zookeeper.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
 
-            <!-- zookeeper 依赖 -->
+            <!-- zookeeper -->
             <dependency>
                 <groupId>org.apache.zookeeper</groupId>
                 <artifactId>zookeeper</artifactId>

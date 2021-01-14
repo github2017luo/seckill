@@ -39,4 +39,20 @@ public class StockServiceImpl implements IStockService {
 
         return RespBean.success( "更新库存成功！",null);
     }
+
+    @Override
+    public RespBean decrementStock(Long seckillGoodsId) {
+
+        if (seckillGoodsId == null) {
+            return RespBean.error("秒杀商品ID不能为空！");
+        }
+
+        int ret = seckillGoodsMapper.decrementStock(seckillGoodsId);
+
+        if (ret != 1) {
+            return RespBean.error("减库存失败！");
+        }
+
+        return RespBean.success("减库存成功！", null);
+    }
 }

@@ -12,5 +12,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2021-01-06
  */
 public interface SeckillGoodsMapper extends BaseMapper<SeckillGoods> {
-
+    Integer decrementStock(Long seckillGoodsId);
 }
