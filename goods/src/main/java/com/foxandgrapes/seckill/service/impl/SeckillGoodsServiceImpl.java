@@ -8,6 +8,9 @@ import com.foxandgrapes.seckill.pojo.SeckillGoods;
 import com.foxandgrapes.seckill.service.ISeckillGoodsService;
 import com.foxandgrapes.seckill.service.ITimeController;
 import com.foxandgrapes.seckill.vo.RespBean;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -40,6 +43,8 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
     private ITimeController timeController;
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private ZooKeeper zkClient;
 
     // 开启事务，因为有两条sql语句
     @Transactional
@@ -101,6 +106,13 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
         // 添加秒杀商品的数量（将数量单独保存）
         stringRedisTemplate.opsForValue().set("SECKILL_GOODS_COUNT_" + seckillGoods.getId(), seckillGoods.getSeckillStock().toString(), diff, TimeUnit.SECONDS);
 
+        // 在zookeeper中添加售完标志
+        try {
+            zkClient.create("/product_sold_out_flag/" + seckillGoods.getId(), "true".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return new RespBean(true, "秒杀商品添加成功并缓存成功!", null);
     }
 }
