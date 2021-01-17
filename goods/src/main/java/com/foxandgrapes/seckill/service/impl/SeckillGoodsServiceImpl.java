@@ -108,7 +108,7 @@ public class SeckillGoodsServiceImpl extends ServiceImpl<SeckillGoodsMapper, Sec
 
         // 在zookeeper中添加售完标志
         try {
-            zkClient.create("/product_sold_out_flag/" + seckillGoods.getId(), "true".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+            zkClient.create("/product_sold_out_flag/" + seckillGoods.getId(), "false".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                     CreateMode.PERSISTENT);
         } catch (Exception e) {
             e.printStackTrace();
