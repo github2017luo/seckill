@@ -2,6 +2,8 @@
 
 ## 前端项目网址：https://github.com/xiaotanwo/seckill_front
 
+## 演示视频：https://www.bilibili.com/video/BV14X4y1K7F6
+
 # 操作系统
 ## Linux环境：centos7 [CentOS-7-x86_64-DVD-2009]
 # 软件环境
